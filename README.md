@@ -22,6 +22,9 @@ ssd_mobilenet_v1_coco_2018_01_28（ssd-mobilenet网络框架）、object_detecti
 (3) 运动目标检测算法研究； 
 (4) 目标匹配与跟踪算法
 
+## 更新
+针对标记区域内的行人检测数量统计，更新为判断某点是否在四边形区域内部，主要代码见multi_track_detection.py的函数isPosition(center_position)。
+
 
 
 
@@ -30,4 +33,4 @@ ssd_mobilenet_v1_coco_2018_01_28（ssd-mobilenet网络框架）、object_detecti
 ![](https://github.com/librahfacebook/Detection/blob/master/result_images/result.jpg) 
 
 ## 数据分析图：<br>
-![](https://github.com/librahfacebook/Detection/blob/master/result_images/analysis.jpg)
+![](https://github.com/librahfacebook/Detection/blob/master/result_images/analysis.png)

@@ -113,6 +113,28 @@ def center(box):
     center_y = int(y + h / 2.0)
     return (center_x, center_y)
 
+# 求取向量叉乘
+def get_vector_cross_product(position0, position1, position):
+
+    product_value = (position1[0]-position0[0]) * (position[1]-position0[1]) -       (position1[1]-position0[1])*(position[0]-position0[0])
+
+    return product_value
+
+# 判断该点是否在四边形内部
+def isPosition(center_position):
+
+    directions = []
+    isPosition = True
+    for i in range(0, len(BORDER)):
+        direction = get_vector_cross_product(BORDER[i], BORDER[(i+1)%len(BORDER)], center_position)
+        directions.append(direction)
+
+    for i in range(0, len(directions)-1):
+        if directions[i]*directions[i+1] < 0:
+            isPosition = False
+            break
+    
+    return isPosition
 
 # 绘制直方图和折线图（每次检测到所经过选择区域的行人数）
 def histograms_line(peoples):
@@ -197,15 +219,14 @@ def track_objects(video, object_tracker):
         for box in boxes:
             box = tuple(box)
             (x, y, w, h) = box
-            (center_x, center_y) = center(box)
+            center_position = center(box)
             # 绘制矩形框
             cv2.rectangle(frame, (int(x), int(y)), (int(x + w), int(y + h)), (0, 255, 0), 2)
             # 绘制矩形框的质心
             cv2.circle(frame, center(box), 2, (0, 0, 255), 2)
             # 计算进出选择区域的人数
-            if center_x >= BORDER[1][0] and center_x <= BORDER[2][0]:
-                if center_y >= BORDER[1][1] - 1 and center_y <= BORDER[1][1] + 1:
-                    peoples[detection_nums] += 1
+            if isPosition(center_position):
+                peoples[detection_nums] += 1
 
         # 显示框架以及选择要跟踪的对象
         cv2.imshow(WINDOW_NAME, frame)
@@ -221,7 +242,7 @@ def track_objects(video, object_tracker):
 
 
 if __name__ == '__main__':
-    video = "test_videos/street.mp4"
+    video = "./test_videos/street.mp4"
     object_tracker = "kcf"
     peoples, times = track_objects(video, object_tracker)
     print(peoples)
