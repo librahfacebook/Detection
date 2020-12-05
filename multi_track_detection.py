@@ -42,6 +42,7 @@ OPENCV_OBJECT_TRACKERS = {
 }
 # 行人检测选择区域
 BORDER = [[142, 171], [101, 339], [283, 339], [296, 171]]
+# BORDER = [[0, 820], [177, 1072], [1100, 744], [784, 686]]
 
 
 # 将训练好的模型以及标签加载到内存中，方便使用
@@ -155,7 +156,7 @@ def histograms_line(peoples):
 
 
 # 使用跟踪器对标记到的目标进行跟踪
-def track_objects(video, object_tracker):
+def track_objects(video, object_tracker, detection_time):
     # 初始化视频流
     cap = cv2.VideoCapture(video)
     frame_rate = cap.get(cv2.CAP_PROP_FPS)  # 帧速率
@@ -165,7 +166,9 @@ def track_objects(video, object_tracker):
     video_time = frame_counts / frame_rate  # 视频总时间
     print("视频总时间：{}s".format(video_time))
     nums = 0  # 计算视频播放帧数
-    times = 40  # 每隔多少ms播放帧
+    times = int(1000/frame_rate)  # 每隔多少ms播放帧
+
+    detection_frames = int(frame_rate * detection_time) # 检测的时间间隔s
     detection_nums = -1  # 检测次数
     peoples = []  # 经过选择区域的行人数
     # 在视频帧上绘制分界线进行计数
@@ -182,7 +185,7 @@ def track_objects(video, object_tracker):
         # 将当前帧重置 (加快处理速度)
         # frame = imutils.resize(frame, width=600)
         # 每隔100帧重新检测帧图像上的行人
-        if nums % (4000 / times) == 0:
+        if nums % detection_frames == 0:
             peoples.append(0)
             detection_nums += 1
             flag = True
@@ -225,7 +228,7 @@ def track_objects(video, object_tracker):
             # 绘制矩形框的质心
             cv2.circle(frame, center(box), 2, (0, 0, 255), 2)
             # 计算进出选择区域的人数
-            if isPosition(center_position):
+            if nums % detection_frames == 0 and isPosition(center_position):
                 peoples[detection_nums] += 1
 
         # 显示框架以及选择要跟踪的对象
@@ -244,10 +247,9 @@ def track_objects(video, object_tracker):
 if __name__ == '__main__':
     video = "./test_videos/street.mp4"
     object_tracker = "kcf"
-    peoples, times = track_objects(video, object_tracker)
+    detection_time = 4 
+    peoples, times = track_objects(video, object_tracker, detection_time)
     print(peoples)
-    # peoples = [1, 1, 2, 4, 5, 6, 2, 4, 1]
-    # times = 70
     total_peoples = 0
     for people in peoples:
         total_peoples += people

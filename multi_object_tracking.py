@@ -7,7 +7,7 @@ import time
 import cv2
 
 # 视频文件路径和OpenCV对象跟踪器
-video = "test_videos/people.mp4"
+video = "test_videos/street.mp4"
 object_tracker = "kcf"
 
 # 定义7种可用跟踪器

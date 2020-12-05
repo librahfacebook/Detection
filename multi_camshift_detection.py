@@ -226,5 +226,5 @@ def track_objects(video):
 
 
 if __name__ == '__main__':
-    video = "test_videos/two.mp4"
+    video = "test_videos/street.mp4"
     track_objects(video)
